@@ -1,1 +1,1 @@
-/usr/bin/g++ -g -rdynamic CMakeFiles/free-infer.dir/main.cpp.o CMakeFiles/free-infer.dir/src/tensor/tensor.cpp.o CMakeFiles/free-infer.dir/test/test_create_tensor.cc.o -o free-infer  -Wl,-rpath,/usr/local/lib -larmadillo /usr/local/lib/libglog.so.0.8.0 /usr/local/lib/libgtest.a 
+/usr/bin/g++ -g CMakeFiles/free-infer.dir/main.cpp.o CMakeFiles/free-infer.dir/src/tensor/tensor.cpp.o CMakeFiles/free-infer.dir/test/test_create_tensor.cc.o -o free-infer  -Wl,-rpath,/usr/local/lib /usr/lib/libarmadillo.so /usr/local/lib/libglog.so.0.8.0 /usr/local/lib/libgtest.a 
