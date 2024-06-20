@@ -10,7 +10,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/root/project/cpp_project/free-infer/main.cpp" "CMakeFiles/free-infer.dir/main.cpp.o" "gcc" "CMakeFiles/free-infer.dir/main.cpp.o.d"
   "/root/project/cpp_project/free-infer/src/tensor/tensor.cpp" "CMakeFiles/free-infer.dir/src/tensor/tensor.cpp.o" "gcc" "CMakeFiles/free-infer.dir/src/tensor/tensor.cpp.o.d"
-  "/root/project/cpp_project/free-infer/test/test_create_tensor.cc" "CMakeFiles/free-infer.dir/test/test_create_tensor.cc.o" "gcc" "CMakeFiles/free-infer.dir/test/test_create_tensor.cc.o.d"
+  "/root/project/cpp_project/free-infer/test/test_tensor.cc" "CMakeFiles/free-infer.dir/test/test_tensor.cc.o" "gcc" "CMakeFiles/free-infer.dir/test/test_tensor.cc.o.d"
   )
 
 # Targets to which this target links.

@@ -97,32 +97,32 @@ CMakeFiles/free-infer.dir/src/tensor/tensor.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/free-infer.dir/src/tensor/tensor.cpp.s"
 	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/project/cpp_project/free-infer/src/tensor/tensor.cpp -o CMakeFiles/free-infer.dir/src/tensor/tensor.cpp.s
 
-CMakeFiles/free-infer.dir/test/test_create_tensor.cc.o: CMakeFiles/free-infer.dir/flags.make
-CMakeFiles/free-infer.dir/test/test_create_tensor.cc.o: ../test/test_create_tensor.cc
-CMakeFiles/free-infer.dir/test/test_create_tensor.cc.o: CMakeFiles/free-infer.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/project/cpp_project/free-infer/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/free-infer.dir/test/test_create_tensor.cc.o"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/free-infer.dir/test/test_create_tensor.cc.o -MF CMakeFiles/free-infer.dir/test/test_create_tensor.cc.o.d -o CMakeFiles/free-infer.dir/test/test_create_tensor.cc.o -c /root/project/cpp_project/free-infer/test/test_create_tensor.cc
+CMakeFiles/free-infer.dir/test/test_tensor.cc.o: CMakeFiles/free-infer.dir/flags.make
+CMakeFiles/free-infer.dir/test/test_tensor.cc.o: ../test/test_tensor.cc
+CMakeFiles/free-infer.dir/test/test_tensor.cc.o: CMakeFiles/free-infer.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/project/cpp_project/free-infer/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/free-infer.dir/test/test_tensor.cc.o"
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/free-infer.dir/test/test_tensor.cc.o -MF CMakeFiles/free-infer.dir/test/test_tensor.cc.o.d -o CMakeFiles/free-infer.dir/test/test_tensor.cc.o -c /root/project/cpp_project/free-infer/test/test_tensor.cc
 
-CMakeFiles/free-infer.dir/test/test_create_tensor.cc.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/free-infer.dir/test/test_create_tensor.cc.i"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/project/cpp_project/free-infer/test/test_create_tensor.cc > CMakeFiles/free-infer.dir/test/test_create_tensor.cc.i
+CMakeFiles/free-infer.dir/test/test_tensor.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/free-infer.dir/test/test_tensor.cc.i"
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/project/cpp_project/free-infer/test/test_tensor.cc > CMakeFiles/free-infer.dir/test/test_tensor.cc.i
 
-CMakeFiles/free-infer.dir/test/test_create_tensor.cc.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/free-infer.dir/test/test_create_tensor.cc.s"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/project/cpp_project/free-infer/test/test_create_tensor.cc -o CMakeFiles/free-infer.dir/test/test_create_tensor.cc.s
+CMakeFiles/free-infer.dir/test/test_tensor.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/free-infer.dir/test/test_tensor.cc.s"
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/project/cpp_project/free-infer/test/test_tensor.cc -o CMakeFiles/free-infer.dir/test/test_tensor.cc.s
 
 # Object files for target free-infer
 free__infer_OBJECTS = \
 "CMakeFiles/free-infer.dir/main.cpp.o" \
 "CMakeFiles/free-infer.dir/src/tensor/tensor.cpp.o" \
-"CMakeFiles/free-infer.dir/test/test_create_tensor.cc.o"
+"CMakeFiles/free-infer.dir/test/test_tensor.cc.o"
 
 # External object files for target free-infer
 free__infer_EXTERNAL_OBJECTS =
 
 free-infer: CMakeFiles/free-infer.dir/main.cpp.o
 free-infer: CMakeFiles/free-infer.dir/src/tensor/tensor.cpp.o
-free-infer: CMakeFiles/free-infer.dir/test/test_create_tensor.cc.o
+free-infer: CMakeFiles/free-infer.dir/test/test_tensor.cc.o
 free-infer: CMakeFiles/free-infer.dir/build.make
 free-infer: /usr/lib/libarmadillo.so
 free-infer: /usr/local/lib/libglog.so.0.8.0

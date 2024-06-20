@@ -11,7 +11,7 @@
 },
 {
   "directory": "/root/project/cpp_project/free-infer/build",
-  "command": "/usr/bin/g++ -DGLOG_USE_GLOG_EXPORT -I/root/project/cpp_project/free-infer/src/tensor -g -o CMakeFiles/free-infer.dir/test/test_create_tensor.cc.o -c /root/project/cpp_project/free-infer/test/test_create_tensor.cc",
-  "file": "/root/project/cpp_project/free-infer/test/test_create_tensor.cc"
+  "command": "/usr/bin/g++ -DGLOG_USE_GLOG_EXPORT -I/root/project/cpp_project/free-infer/src/tensor -g -o CMakeFiles/free-infer.dir/test/test_tensor.cc.o -c /root/project/cpp_project/free-infer/test/test_tensor.cc",
+  "file": "/root/project/cpp_project/free-infer/test/test_tensor.cc"
 }
 ]

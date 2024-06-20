@@ -571,29 +571,29 @@ src/tensor/tensor.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/free-infer.dir/build.make CMakeFiles/free-infer.dir/src/tensor/tensor.cpp.s
 .PHONY : src/tensor/tensor.cpp.s
 
-test/test_create_tensor.o: test/test_create_tensor.cc.o
-.PHONY : test/test_create_tensor.o
+test/test_tensor.o: test/test_tensor.cc.o
+.PHONY : test/test_tensor.o
 
 # target to build an object file
-test/test_create_tensor.cc.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/free-infer.dir/build.make CMakeFiles/free-infer.dir/test/test_create_tensor.cc.o
-.PHONY : test/test_create_tensor.cc.o
+test/test_tensor.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/free-infer.dir/build.make CMakeFiles/free-infer.dir/test/test_tensor.cc.o
+.PHONY : test/test_tensor.cc.o
 
-test/test_create_tensor.i: test/test_create_tensor.cc.i
-.PHONY : test/test_create_tensor.i
+test/test_tensor.i: test/test_tensor.cc.i
+.PHONY : test/test_tensor.i
 
 # target to preprocess a source file
-test/test_create_tensor.cc.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/free-infer.dir/build.make CMakeFiles/free-infer.dir/test/test_create_tensor.cc.i
-.PHONY : test/test_create_tensor.cc.i
+test/test_tensor.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/free-infer.dir/build.make CMakeFiles/free-infer.dir/test/test_tensor.cc.i
+.PHONY : test/test_tensor.cc.i
 
-test/test_create_tensor.s: test/test_create_tensor.cc.s
-.PHONY : test/test_create_tensor.s
+test/test_tensor.s: test/test_tensor.cc.s
+.PHONY : test/test_tensor.s
 
 # target to generate assembly for a file
-test/test_create_tensor.cc.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/free-infer.dir/build.make CMakeFiles/free-infer.dir/test/test_create_tensor.cc.s
-.PHONY : test/test_create_tensor.cc.s
+test/test_tensor.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/free-infer.dir/build.make CMakeFiles/free-infer.dir/test/test_tensor.cc.s
+.PHONY : test/test_tensor.cc.s
 
 # Help Target
 help:
@@ -641,9 +641,9 @@ help:
 	@echo "... src/tensor/tensor.o"
 	@echo "... src/tensor/tensor.i"
 	@echo "... src/tensor/tensor.s"
-	@echo "... test/test_create_tensor.o"
-	@echo "... test/test_create_tensor.i"
-	@echo "... test/test_create_tensor.s"
+	@echo "... test/test_tensor.o"
+	@echo "... test/test_tensor.i"
+	@echo "... test/test_tensor.s"
 .PHONY : help
 
 
