@@ -68,7 +68,7 @@ float Tensor<float>::at(uint32_t channel, uint32_t row, uint32_t col) const {
   return this->data_.at(row, col, channel);
 }
 
-float& Tensor<float>::at(uint32_t channel, uint32_t row, uint32_t col){
+float& Tensor<float>::at(uint32_t channel, uint32_t row, uint32_t col) {
   CHECK_LT(row, this->rows());
   CHECK_LT(col, this->cols());
   CHECK_LT(channel, this->channels());
@@ -118,23 +118,75 @@ std::vector<float> Tensor<float>::values(bool row_major) {
 }
 
 Tensor<float>::Tensor(uint32_t size) {
-  data_ = arma::fcube(1, size, 1);
+  this->data_ = arma::fcube(1, size, 1);
   this->raw_shapes_ = std::vector<uint32_t>{size};
 }
 
 Tensor<float>::Tensor(uint32_t rows, uint32_t cols) {
-  data_ = arma::fcube(rows, cols, 1);
+  this->data_ = arma::fcube(rows, cols, 1);
   this->raw_shapes_ = std::vector<uint32_t>{rows, cols};
 }
 
 Tensor<float>::Tensor(uint32_t channels, uint32_t rows, uint32_t cols) {
-  data_ = arma::fcube(rows, cols, channels);
+  this->data_ = arma::fcube(rows, cols, channels);
   if (channels == 1 && rows == 1) {
     this->raw_shapes_ = std::vector<uint32_t>{cols};
   } else if (channels == 1) {
     this->raw_shapes_ = std::vector<uint32_t>{rows, cols};
   } else {
     this->raw_shapes_ = std::vector<uint32_t>{rows, cols, channels};
+  }
+}
+
+Tensor<float>::Tensor(const std::vector<uint32_t>& shapes) {
+  CHECK_LE(shapes.size(), 3);
+
+  if (shapes.size() == 3) {
+    uint32_t channels = shapes.at(0);
+    uint32_t rows = shapes.at(1);
+    uint32_t cols = shapes.at(2);
+    this->data_ = arma::fcube(rows, cols, channels);
+    if (channels == 1 & rows == 1) {
+      this->raw_shapes_ = {cols};
+    } else if (channels == 1) {
+      this->raw_shapes_ = {rows, cols};
+    } else {
+      this->raw_shapes_ = shapes;
+    }
+  } else if (shapes.size() == 2) {
+    this->data_ = arma::fcube(1, shapes.at(0), shapes.at(1));
+    this->raw_shapes_ = shapes;
+  } else {
+    this->data_ = arma::fcube(1, shapes.at(0), 1);
+    this->raw_shapes_ = shapes;
+  }
+}
+
+Tensor<float>::Tensor(const Tensor& tensor) {
+  if(this != &tensor){
+    this->data_ = tensor.data_;
+    this->raw_shapes_ = tensor.raw_shapes_;
+  }
+}
+
+Tensor<float>::Tensor(Tensor&& tensor) noexcept {
+  if(this != &tensor){
+    this->data_ = std::move(tensor.data_);
+    this->raw_shapes_ = std::move(tensor.raw_shapes_);
+  }
+}
+
+Tensor<float>& Tensor<float>::operator=(Tensor&& tensor) noexcept {
+  if(this != &tensor){
+    this->data_ = std::move(tensor.data_);
+    this->raw_shapes_ = std::move(tensor.raw_shapes_);
+  }
+}
+
+Tensor<float>& Tensor<float>::operator=(const Tensor& tensor) {
+  if(this != &tensor){
+    this->data_ = tensor.data_;
+    this->raw_shapes_ = tensor.raw_shapes_;
   }
 }
 
