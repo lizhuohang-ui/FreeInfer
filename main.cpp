@@ -12,7 +12,7 @@ int main(int argc, char* argv[]) {
   std::cout << ARMA_VERSION_NAME << std::endl;
   testing::InitGoogleTest(&argc, argv);
   google::InitGoogleLogging("free");
-  FLAGS_log_dir = "./log";
+  FLAGS_log_dir = "../log";
   FLAGS_alsologtostderr = true;
 
   LOG(INFO) << "Start test...\n";
@@ -35,7 +35,6 @@ int main(int argc, char* argv[]) {
   //   }
   //   std::cout << std::endl;
   // }
-  
-  
+   
   return RUN_ALL_TESTS();
 }

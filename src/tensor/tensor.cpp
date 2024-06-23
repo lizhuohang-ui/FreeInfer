@@ -1,24 +1,25 @@
 #include "tensor.hpp"
+#include <cstdint>
 namespace free_infer {
 
 uint32_t Tensor<float>::rows() const {
   CHECK(!this->data_.empty());
-  return data_.n_rows;
+  return this->data_.n_rows;
 }
 
 uint32_t Tensor<float>::cols() const {
   CHECK(!this->data_.empty());
-  return data_.n_cols;
+  return this->data_.n_cols;
 }
 
 uint32_t Tensor<float>::channels() const {
   CHECK(!this->data_.empty());
-  return data_.n_slices;
+  return this->data_.n_slices;
 }
 
 uint32_t Tensor<float>::size() const {
   CHECK(!this->data_.empty());
-  return data_.size();
+  return this->data_.size();
 }
 
 void Tensor<float>::set_data(const arma::fcube& data) { this->data_ = data; }
@@ -181,6 +182,7 @@ Tensor<float>& Tensor<float>::operator=(Tensor&& tensor) noexcept {
     this->data_ = std::move(tensor.data_);
     this->raw_shapes_ = std::move(tensor.raw_shapes_);
   }
+  return *this;
 }
 
 Tensor<float>& Tensor<float>::operator=(const Tensor& tensor) {
@@ -188,6 +190,7 @@ Tensor<float>& Tensor<float>::operator=(const Tensor& tensor) {
     this->data_ = tensor.data_;
     this->raw_shapes_ = tensor.raw_shapes_;
   }
+  return *this;
 }
 
 void Tensor<float>::Ones() {
@@ -214,7 +217,7 @@ void Tensor<float>::Reshape(const std::vector<uint32_t>& shapes,
   CHECK_LE(shapes.size(), 3);
   uint32_t tensor_size = this->data_.size();
   uint32_t shapes_size =
-      std::accumulate(shapes.begin(), shapes.end(), 1, std::multiplies());
+      std::accumulate(shapes.begin(), shapes.end(), 1, std::multiplies<uint32_t>());
   CHECK_EQ(tensor_size, shapes_size);
   std::vector<float> values;
   if (row_major) {
