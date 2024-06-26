@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "tensor.hpp"
+#include "load_data.hpp"
 
 int main(int argc, char* argv[]) {
   std::cout << "Hello, from free-infer!\n";
@@ -14,6 +15,9 @@ int main(int argc, char* argv[]) {
   google::InitGoogleLogging("free");
   FLAGS_log_dir = "../log";
   FLAGS_alsologtostderr = true;
+  
+  free_infer::CSVDataLoader csvData;
+  // csvData.LoadData("../model_file");
 
   LOG(INFO) << "Start test...\n";
   

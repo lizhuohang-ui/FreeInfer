@@ -21,8 +21,9 @@ if (!WIN32)
     set(link_lib "${link_lib} pthread")
 endif ()
 
-
-target_include_directories(${PROJECT_NAME} PUBLIC ${Armadillo_INCLUDE_DIR} ${glog_INCLUDE_DIR} ${GTest_INCLUDE_DIR} ./include)
+target_include_directories(${PROJECT_NAME} PUBLIC ${Armadillo_INCLUDE_DIR} ${glog_INCLUDE_DIR} ${GTest_INCLUDE_DIR})
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/tensor
+                                                  ${CMAKE_CURRENT_SOURCE_DIR}/include/pnnx)
 target_link_libraries(${PROJECT_NAME} ${ARMADILLO_LIBRARIES} ${glog_LIBRARIES} ${link_lib})
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
