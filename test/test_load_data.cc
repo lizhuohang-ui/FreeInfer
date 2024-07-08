@@ -6,7 +6,7 @@
 
 #include "load_data.hpp"
 
-TEST(LOAD_DATA, CSVDataLoader)
+TEST(LoadData, CSVDataLoader)
 {
     free_infer::CSVDataLoader csv_data_loader;
     LOG(INFO) << "-----------------------CSVDataLoader-----------------------";

@@ -16,9 +16,6 @@ int main(int argc, char* argv[]) {
   FLAGS_log_dir = "../log";
   FLAGS_alsologtostderr = true;
   
-  free_infer::CSVDataLoader csvData;
-  // csvData.LoadData("../model_file");
-
   LOG(INFO) << "Start test...\n";
   
   // free_infer::Tensor<float> tensor(3, 3, 4);

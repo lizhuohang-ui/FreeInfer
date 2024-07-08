@@ -1,5 +1,5 @@
-#ifndef __TENSOR_HPP__
-#define __TENSOR_HPP__
+#ifndef __FREE_INFER_TENSOR_HPP__
+#define __FREE_INFER_TENSOR_HPP__
 
 #include <glog/logging.h>
 

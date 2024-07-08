@@ -1,5 +1,5 @@
-#ifndef __LOAD_DATA_HPP__
-#define __LOAD_DATA_HPP__
+#ifndef __FREE_INFER_LOAD_DATA_HPP__
+#define __FREE_INFER_LOAD_DATA_HPP__
 
 #include <armadillo>
 #include <cstddef>
