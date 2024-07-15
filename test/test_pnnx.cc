@@ -3,7 +3,7 @@
 
 #include "ir.h"
 
-TEST(TestPnnx, PnnxGraphOps) {
+TEST(TestPNNX, PNNXGraphOps) {
   std::string bin_path("../model_file/test_linear.pnnx.bin");
   std::string param_path("../model_file/test_linear.pnnx.param");
   std::unique_ptr<pnnx::Graph> graph = std::make_unique<pnnx::Graph>();

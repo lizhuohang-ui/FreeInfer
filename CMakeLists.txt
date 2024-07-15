@@ -12,9 +12,10 @@ find_package(GTest REQUIRED)
 
 aux_source_directory(./src/tensor DIR_SRC_TENSOR)
 aux_source_directory(./src/pnnx DIR_SRC_PNNX)
+aux_source_directory(./src/runtime DIR_SRC_RUNTIME)
 aux_source_directory(./test DIR_TEST_ARMA)
 
-add_executable(free-infer main.cpp ${DIR_SRC_TENSOR} ${DIR_SRC_PNNX} ${DIR_TEST_ARMA})
+add_executable(free-infer main.cpp ${DIR_SRC_TENSOR} ${DIR_SRC_PNNX} ${DIR_TEST_ARMA} ${DIR_SRC_RUNTIME})
 
 set(link_lib glog::glog GTest::gtest)
 if (!WIN32)
@@ -23,7 +24,9 @@ endif ()
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${Armadillo_INCLUDE_DIR} ${glog_INCLUDE_DIR} ${GTest_INCLUDE_DIR})
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/tensor
-                                                  ${CMAKE_CURRENT_SOURCE_DIR}/include/pnnx)
+                                                  ${CMAKE_CURRENT_SOURCE_DIR}/include/pnnx
+                                                  ${CMAKE_CURRENT_SOURCE_DIR}/include/runtime
+                                                  )
 target_link_libraries(${PROJECT_NAME} ${ARMADILLO_LIBRARIES} ${glog_LIBRARIES} ${link_lib})
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
