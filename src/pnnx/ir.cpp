@@ -563,7 +563,8 @@ Graph& Graph::operator=(const Graph& /*rhs*/)
 
 static void load_parameter(Operator* op, const std::string& key, const std::string& value)
 {
-    op->params[key] = Parameter::parse_from_string(value);
+    if(!key.empty())
+        op->params[key] = Parameter::parse_from_string(value);
 }
 
 static void load_input_key(Operator* op, const std::string& key, const std::string& value)
