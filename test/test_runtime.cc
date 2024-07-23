@@ -42,3 +42,23 @@ TEST(TestRuntime, RuntimeParams) {
     }
   }
 }
+
+
+TEST(TestRuntime, TopoSort) {
+  using namespace free_infer;
+  std::string bin_path("../model_file/resnet18_batch1.pnnx.bin");
+  std::string param_path("../model_file/resnet18_batch1.param");
+  RuntimeGraph graph(param_path, bin_path);
+  const bool init_success = graph.Init();
+  ASSERT_EQ(init_success, true);
+  // graph.Build("pnnx_input_0", "pnnx_output_0");
+  graph.ReverseTopo();
+  const auto &topo_queues = graph.get_topo_queues();
+
+  int index = 0;
+  for (const auto &operator_ : topo_queues) {
+    LOG(INFO) << "Index: " << index << " Type: " << operator_->type
+              << " Name: " << operator_->name;
+    index += 1;
+  }
+}

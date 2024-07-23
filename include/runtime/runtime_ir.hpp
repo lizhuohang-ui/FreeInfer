@@ -31,7 +31,10 @@ class RuntimeGraph {
   const std::string& bin_path() const;
   const std::string& param_path() const;
   const std::vector<std::shared_ptr<RuntimeOperator>>& operators() const;
+  const std::vector<std::shared_ptr<RuntimeOperator>>& get_topo_queues() const;
   bool Init();
+  void ReverseTopo(void);
+  void dfs(std::shared_ptr<RuntimeOperator> op);
 
  private:
   static void InitGraphOperatorsInput(
@@ -57,6 +60,7 @@ class RuntimeGraph {
   std::string bin_path_;
   std::vector<std::shared_ptr<RuntimeOperator>> operators_;
   std::map<std::string, std::shared_ptr<RuntimeOperator>> operators_maps_;
+  std::vector<std::shared_ptr<RuntimeOperator>> operators_topo_;
 
   std::unique_ptr<pnnx::Graph> graph_;  // graph in pnnx
 };

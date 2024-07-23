@@ -1,7 +1,10 @@
 #include "runtime_ir.hpp"
 
+#include <algorithm>
 #include <cstdint>
+#include <map>
 #include <memory>
+#include <stack>
 #include <string>
 #include <type_traits>
 #include <utility>
@@ -141,11 +144,11 @@ void RuntimeGraph::InitGraphOperatorsParam(
     const int type =
         param.type;  // 0=null 1=b 2=i 3=f 4=s 5=ai 6=af 7=as 8=others
     switch (type) {
-    //   case 0: {
-    //     RuntimeParameter* runtime_parameter = new RuntimeParameter;
-    //     runtime_operator->params.insert({name, runtime_parameter});
-    //     break;
-    //   }
+        //   case 0: {
+        //     RuntimeParameter* runtime_parameter = new RuntimeParameter;
+        //     runtime_operator->params.insert({name, runtime_parameter});
+        //     break;
+        //   }
 
       case 1: {
         RuntimeParameterBool* runtime_parameter =
@@ -231,9 +234,36 @@ void RuntimeGraph::InitGraphOperatorsAttr(
   }
 }
 
+void RuntimeGraph::dfs(std::shared_ptr<RuntimeOperator> op) {
+  op->has_forward = true;
+  for (const auto& [_, output_op] : op->output_operators_maps) {
+    if (!output_op->has_forward) {
+      dfs(output_op);
+    }
+  }
+  for (const auto& [_, output_op] : op->output_operators_maps) {
+    CHECK(op->has_forward);
+  }
+  this->operators_topo_.push_back(op);
+}
+
+void RuntimeGraph::ReverseTopo(void) {
+  for (const auto& op : this->operators_) {
+    CHECK(op != nullptr) << "current operator is nullptr";
+    if (!op->has_forward) {
+      dfs(op);
+    }
+  }
+  // std::reverse(operators_topo_.begin(), operators_topo_.end());
+}
+
 const std::vector<std::shared_ptr<RuntimeOperator>>& RuntimeGraph::operators()
     const {
   return this->operators_;
+}
+const std::vector<std::shared_ptr<RuntimeOperator>>&
+RuntimeGraph::get_topo_queues() const {
+  return this->operators_topo_;
 }
 
 RuntimeOperator::~RuntimeOperator() {
