@@ -24,6 +24,13 @@ class RuntimeAttribute;
 class Layer;  // No completing
 
 class RuntimeGraph {
+ private:
+  enum class GraphState {
+    NeedInit = -2,
+    NeedBuild,
+    Complete = 0,
+  };
+
  public:
   RuntimeGraph(std::string param_path, std::string bin_path);
   void set_bin_path(const std::string& bin_path);
@@ -32,8 +39,10 @@ class RuntimeGraph {
   const std::string& param_path() const;
   const std::vector<std::shared_ptr<RuntimeOperator>>& operators() const;
   const std::vector<std::shared_ptr<RuntimeOperator>>& get_topo_queues() const;
+  const GraphState graph_state() const; 
   bool Init();
-  void ReverseTopo(void);
+  bool Build(const std::string& input_name, const std::string& output_name);
+  void Topo(void);
   void dfs(std::shared_ptr<RuntimeOperator> op);
 
  private:
@@ -53,6 +62,13 @@ class RuntimeGraph {
       const std::map<std::string, pnnx::Attribute>& attrs,
       const std::shared_ptr<RuntimeOperator>& runtime_operator);
 
+  static void InitOperatorInput(
+      const std::vector<std::shared_ptr<RuntimeOperator>>& operators);
+
+  static void InitOperatorOutput(
+      const std::vector<pnnx::Operator*>& pnnx_operators,
+      const std::vector<std::shared_ptr<RuntimeOperator>>& operators);
+
  private:
   std::string input_name_;
   std::string output_name_;
@@ -62,6 +78,7 @@ class RuntimeGraph {
   std::map<std::string, std::shared_ptr<RuntimeOperator>> operators_maps_;
   std::vector<std::shared_ptr<RuntimeOperator>> operators_topo_;
 
+  GraphState graph_state_ = GraphState::NeedInit;
   std::unique_ptr<pnnx::Graph> graph_;  // graph in pnnx
 };
 
@@ -77,7 +94,7 @@ class RuntimeOperator {
   std::map<std::string, std::shared_ptr<RuntimeOperand>> input_operands_maps;
 
   std::vector<std::string> output_names;
-  std::shared_ptr<RuntimeOperand> output_opearands;
+  std::shared_ptr<RuntimeOperand> output_operands;
   std::map<std::string, std::shared_ptr<RuntimeOperator>> output_operators_maps;
 
   std::shared_ptr<Layer> layer;

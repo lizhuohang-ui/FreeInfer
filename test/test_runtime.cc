@@ -43,7 +43,6 @@ TEST(TestRuntime, RuntimeParams) {
   }
 }
 
-
 TEST(TestRuntime, TopoSort) {
   using namespace free_infer;
   std::string bin_path("../model_file/resnet18_batch1.pnnx.bin");
@@ -52,7 +51,7 @@ TEST(TestRuntime, TopoSort) {
   const bool init_success = graph.Init();
   ASSERT_EQ(init_success, true);
   // graph.Build("pnnx_input_0", "pnnx_output_0");
-  graph.ReverseTopo();
+  graph.Topo();
   const auto &topo_queues = graph.get_topo_queues();
 
   int index = 0;
@@ -62,3 +61,37 @@ TEST(TestRuntime, TopoSort) {
     index += 1;
   }
 }
+
+
+TEST(test_ir, build1_output_tensors) {
+  using namespace free_infer;
+  std::string bin_path("../model_file/resnet18_batch1.pnnx.bin");
+  std::string param_path("../model_file/resnet18_batch1.param");
+  RuntimeGraph graph(param_path, bin_path);
+  ASSERT_EQ(int(graph.graph_state()), -2);
+  const bool init_success = graph.Init();
+  ASSERT_EQ(init_success, true);
+  ASSERT_EQ(int(graph.graph_state()), -1);
+  graph.Build("pnnx_input_0", "pnnx_output_0");
+  ASSERT_EQ(int(graph.graph_state()), 0);
+
+  const auto &ops = graph.operators();
+  for (const auto &op : ops) {
+    LOG(INFO) << op->name;
+    // 打印op输出空间的张量
+    const auto &operand = op->output_operands;
+    if (!operand || operand->datas.empty()) {
+      continue;
+    }
+    const uint32_t batch_size = operand->datas.size();
+    LOG(INFO) << "batch: " << batch_size;
+
+    for (uint32_t i = 0; i < batch_size; ++i) {
+      const auto &data = operand->datas.at(i);
+      LOG(INFO) << "channel: " << data->channels()
+                << " height: " << data->rows() << " cols: " << data->cols();
+    }
+  }
+}
+
+

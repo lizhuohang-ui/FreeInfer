@@ -1,6 +1,7 @@
 #include "runtime_ir.hpp"
 
 #include <algorithm>
+#include <cassert>
 #include <cstdint>
 #include <map>
 #include <memory>
@@ -12,6 +13,7 @@
 
 #include "ir.h"
 #include "status_code.hpp"
+#include "tensor.hpp"
 
 namespace free_infer {
 RuntimeGraph::RuntimeGraph(std::string param_path, std::string bin_path)
@@ -69,7 +71,7 @@ bool RuntimeGraph::Init() {
         InitGraphOperatorsInput(inputs, runtime_operator);
       }
 
-      const std::vector<pnnx::Operand*>& outputs = op->inputs;
+      const std::vector<pnnx::Operand*>& outputs = op->outputs;
       if (!outputs.empty()) {
         InitGraphOperatorsOutput(outputs, runtime_operator);
       }
@@ -88,6 +90,8 @@ bool RuntimeGraph::Init() {
       this->operators_maps_.insert({runtime_operator->name, runtime_operator});
     }
   }
+
+  this->graph_state_ = GraphState::NeedBuild;
   return true;
 }
 
@@ -130,7 +134,7 @@ void RuntimeGraph::InitGraphOperatorsOutput(
     if (!output) {
       continue;
     }
-    const std::vector<pnnx::Operator*>& consumers = output->consumers;
+    const auto& consumers = output->consumers;
     for (const auto& c : consumers) {
       runtime_operator->output_names.push_back(c->name);
     }
@@ -247,23 +251,208 @@ void RuntimeGraph::dfs(std::shared_ptr<RuntimeOperator> op) {
   this->operators_topo_.push_back(op);
 }
 
-void RuntimeGraph::ReverseTopo(void) {
+void RuntimeGraph::Topo(void) {
+  // build graph
+  for (const auto& current_op : this->operators_) {
+    const std::vector<std::string>& output_names = current_op->output_names;
+    for (const auto& output_name : output_names) {
+      if (const auto& output_op = this->operators_maps_.find(output_name);
+          output_op != this->operators_maps_.end()) {
+        current_op->output_operators_maps.insert(
+            {output_name, output_op->second});
+      }
+    }
+  }
+
   for (const auto& op : this->operators_) {
     CHECK(op != nullptr) << "current operator is nullptr";
     if (!op->has_forward) {
       dfs(op);
     }
   }
-  // std::reverse(operators_topo_.begin(), operators_topo_.end());
+  std::reverse(operators_topo_.begin(), operators_topo_.end());
 }
 
 const std::vector<std::shared_ptr<RuntimeOperator>>& RuntimeGraph::operators()
     const {
   return this->operators_;
 }
+
 const std::vector<std::shared_ptr<RuntimeOperator>>&
 RuntimeGraph::get_topo_queues() const {
   return this->operators_topo_;
+}
+
+const RuntimeGraph::GraphState RuntimeGraph::graph_state() const {
+  return this->graph_state_;
+}
+void RuntimeGraph::InitOperatorInput(
+    const std::vector<std::shared_ptr<RuntimeOperator>>& operators) {
+  if (operators.empty()) {
+    LOG(ERROR) << "Operators for init input shapes is empty!";
+    return;
+  }
+
+  for (const auto& op : operators) {
+    if (op->input_operands.empty()) {
+      continue;
+    } else {
+      const auto& input_operands_map = op->input_operands_maps;
+      for (const auto& [_, input_operand] : input_operands_map) {
+        const auto& type = input_operand->type;
+        CHECK(type == RuntimeDataType::kTypeFloat32)
+            << "The graph only support float32 yet!";
+        const auto& input_operand_shape = input_operand->shapes;
+
+        auto& input_datas = input_operand->datas;
+        CHECK(!input_operand_shape.empty()) << "Operand shape error";
+        const int32_t batch = input_operand_shape.at(0);
+        CHECK(batch >= 0) << "Dynaimc batch size is not supported yet!";
+        CHECK(input_operand_shape.size() == 2 ||
+              input_operand_shape.size() == 3 ||
+              input_operand_shape.size() == 4)
+            << "Unsupported tensor shape sizes" << input_operand_shape.size();
+
+        if (!input_datas.empty()) {
+          CHECK(input_datas.size() == batch);
+        } else {
+          input_datas.resize(batch);
+        }
+      }
+    }
+  }
+}
+
+void RuntimeGraph::InitOperatorOutput(
+    const std::vector<pnnx::Operator*>& pnnx_operators,
+    const std::vector<std::shared_ptr<RuntimeOperator>>& operators) {
+  CHECK(!pnnx_operators.empty() && !operators.empty());
+  CHECK(pnnx_operators.size() == operators.size());
+
+  for (uint32_t i = 0; i < pnnx_operators.size(); ++i) {
+    const auto operands = pnnx_operators.at(i)->outputs;
+    CHECK(operands.size() <= 1) << "Only support one node one output yet!";
+    if (operands.empty()) {
+      continue;
+    }
+    CHECK(operands.size() == 1)
+        << "Only support one output in the FreeInfer yet!";
+
+    pnnx::Operand* operand = operands.front();
+    const auto& runtime_op = operators.at(i);
+    CHECK(operand != nullptr);
+    const std::vector<int32_t>& operand_shapes = operand->shape;
+    const auto& output_tensors = runtime_op->output_operands;
+    CHECK(operand != nullptr) << "Operand output is null";
+    const int32_t batch = operand_shapes.at(0);
+    CHECK(batch >= 0) << "Dynamic batch size is not supported!";
+    CHECK(operand_shapes.size() == 2 || operand_shapes.size() == 3 ||
+          operand_shapes.size() == 4)
+        << "Unsupported tensor shape sizes" << operand_shapes.size();
+
+    if (!output_tensors) {
+      std::shared_ptr<RuntimeOperand> output_operand =
+          std::make_shared<RuntimeOperand>();
+      output_operand->name = operand->name + "_output";
+      output_operand->type = RuntimeDataType::kTypeFloat32;
+      output_operand->shapes = operand_shapes;
+      for (uint32_t j = 0; j < batch; ++j) {
+        if (operand_shapes.size() == 4) {
+          sftensor output_tensor = std::make_shared<Tensor<float>>(
+              operand_shapes.at(1), operand_shapes.at(2), operand_shapes.at(3));
+          output_operand->datas.push_back(output_tensor);
+        } else if (operand_shapes.size() == 2) {
+          sftensor output_tensor =
+              std::make_shared<Tensor<float>>(operand_shapes.at(1));
+          output_operand->datas.push_back(output_tensor);
+        } else {
+          sftensor output_tensor = std::make_shared<Tensor<float>>(
+              operand_shapes.at(1), operand_shapes.at(2));
+          output_operand->datas.push_back(output_tensor);
+        }
+      }
+      runtime_op->output_operands = std::move(output_operand);
+    } else {
+      CHECK(batch == output_tensors->datas.size());
+      CHECK(output_tensors->type == RuntimeDataType::kTypeFloat32)
+          << "The graph only support float32 yet!";
+      CHECK(output_tensors->shapes == operand_shapes);
+      for (uint32_t b = 0; b < batch; ++b) {
+        sftensor output_tensor = output_tensors->datas.at(b);
+        const auto& tensor_shapes = output_tensor->shapes();
+        if (operand_shapes.size() == 4) {
+          if (tensor_shapes.at(0) != operand_shapes.at(1) ||
+              tensor_shapes.at(1) != operand_shapes.at(2) ||
+              tensor_shapes.at(2) != operand_shapes.at(3)) {
+            DLOG(WARNING)
+                << "The shape of tensor do not adapting with output operand";
+            const auto& target_shapes = std::vector<uint32_t>{
+                (uint32_t)operand_shapes.at(1), (uint32_t)operand_shapes.at(2),
+                (uint32_t)operand_shapes.at(3)};
+            output_tensor->Reshape(target_shapes);
+          }
+        } else if (operand_shapes.size() == 2) {
+          if (tensor_shapes.at(0) != 1 ||
+              tensor_shapes.at(1) != operand_shapes.at(1) ||
+              tensor_shapes.at(2) != 1) {
+            DLOG(WARNING)
+                << "The shape of tensor do not adapting with output operand";
+            const auto& target_shapes =
+                std::vector<uint32_t>{(uint32_t)operand_shapes.at(1)};
+            output_tensor->Reshape(target_shapes);
+          }
+        } else {
+          if (tensor_shapes.at(0) != 1 ||
+              tensor_shapes.at(1) != operand_shapes.at(1) ||
+              tensor_shapes.at(2) != operand_shapes.at(2)) {
+            DLOG(WARNING)
+                << "The shape of tensor do not adapting with output operand";
+            const auto& target_shapes = std::vector<uint32_t>{
+                (uint32_t)operand_shapes.at(1), (uint32_t)operand_shapes.at(2)};
+            output_tensor->Reshape(target_shapes);
+          }
+        }
+      }
+    }
+  }
+}
+
+bool RuntimeGraph::Build(const std::string& input_name,
+                         const std::string& output_name) {
+  if (graph_state_ == GraphState::Complete) {
+    LOG(INFO) << "Model has been built already!";
+    return true;
+  }
+
+  if (graph_state_ == GraphState::NeedInit) {
+    bool init_success = Init();
+    CHECK(init_success) << "Init graph failed";
+    if (init_success) {
+      return false;
+    }
+  }
+
+  CHECK(graph_state_ >= GraphState::NeedBuild)
+      << "Graph status error, current state is " << int(graph_state_);
+  LOG_IF(ERROR, operators_.empty())
+      << "Graph operators is empty, may be no init";
+
+  InitOperatorInput(operators_);
+  InitOperatorOutput(graph_->ops, operators_);
+
+  Topo();
+
+  CHECK(operators_topo_.size() == operators_.size())
+      << "Build wrong topo queue";
+  graph_state_ = GraphState::Complete;
+  input_name_ = input_name;
+  output_name_ = output_name;
+  if (graph_ != nullptr) {
+    graph_.reset();
+    graph_ = nullptr;
+  }
+
+  return true;
 }
 
 RuntimeOperator::~RuntimeOperator() {

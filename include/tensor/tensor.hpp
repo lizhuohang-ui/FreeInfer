@@ -5,6 +5,7 @@
 
 #include <armadillo>
 #include <iostream>
+#include <memory>
 #include <vector>
 
 namespace free_infer {
@@ -218,6 +219,9 @@ class Tensor<float> {
   arma::fcube data_;                  // data of the tensor
                                       //
 };
+
+using sftensor = std::shared_ptr<Tensor<float>>;
+
 }  // namespace free_infer
 
 #endif  //__TENSOR_HPP__
