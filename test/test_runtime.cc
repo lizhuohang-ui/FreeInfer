@@ -50,7 +50,6 @@ TEST(TestRuntime, TopoSort) {
   RuntimeGraph graph(param_path, bin_path);
   const bool init_success = graph.Init();
   ASSERT_EQ(init_success, true);
-  // graph.Build("pnnx_input_0", "pnnx_output_0");
   graph.Topo();
   const auto &topo_queues = graph.get_topo_queues();
 
