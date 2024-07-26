@@ -13,22 +13,20 @@
 namespace free_infer {
 class LayerFactory {
  public:
-  typedef ParseParameterAttrStatus (*Creator)(
-      const std::shared_ptr<RuntimeOperator>& op,
-      std::shared_ptr<Layer>& layer);
+  typedef ParseParameterAttrStatus (*Creator)(const std::shared_ptr<RuntimeOperator>& op,
+                                              std::shared_ptr<Layer>& layer);
   typedef std::map<std::string, Creator> LayerRegistry;
 
  public:
+  LayerFactory(){}
   static LayerFactory& Registry();
   void RegisterCreator(const std::string& layer_type, Creator creator);
-  std::shared_ptr<Layer> CreateLayer(
-      const std::shared_ptr<RuntimeOperator>& op);
+  static std::shared_ptr<Layer> CreateLayer(const std::shared_ptr<RuntimeOperator>& op);
 
   LayerFactory(const LayerFactory&) = delete;
   LayerFactory& operator=(const LayerFactory&) = delete;
 
  private:
-  LayerFactory(){};
   LayerRegistry layer_registry_;
 };
 

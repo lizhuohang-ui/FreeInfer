@@ -14,9 +14,11 @@ aux_source_directory(./src/tensor DIR_SRC_TENSOR)
 aux_source_directory(./src/pnnx DIR_SRC_PNNX)
 aux_source_directory(./src/runtime DIR_SRC_RUNTIME)
 aux_source_directory(./src/layer/layer_factory DIR_SRC_LAYER_FACTORY)
+aux_source_directory(./src/layer/layer_activiation DIR_SRC_LAYER_ACTIVIATION)
 aux_source_directory(./test DIR_TEST_ARMA)
 
-add_executable(free-infer main.cpp ${DIR_SRC_TENSOR} ${DIR_SRC_PNNX} ${DIR_TEST_ARMA} ${DIR_SRC_RUNTIME} ${DIR_SRC_LAYER_FACTORY})
+add_executable(free-infer main.cpp ${DIR_SRC_TENSOR} ${DIR_SRC_PNNX} ${DIR_TEST_ARMA} 
+        ${DIR_SRC_RUNTIME} ${DIR_SRC_LAYER_FACTORY} ${DIR_SRC_LAYER_ACTIVIATION})
 
 set(link_lib glog::glog GTest::gtest)
 if (!WIN32)
@@ -28,8 +30,11 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/in
                                                   ${CMAKE_CURRENT_SOURCE_DIR}/include/pnnx
                                                   ${CMAKE_CURRENT_SOURCE_DIR}/include/runtime
                                                   ${CMAKE_CURRENT_SOURCE_DIR}/include/layer/layer_factory
+                                                  ${CMAKE_CURRENT_SOURCE_DIR}/include/layer/layer_activiation
                                                   )
 target_link_libraries(${PROJECT_NAME} ${ARMADILLO_LIBRARIES} ${glog_LIBRARIES} ${link_lib})
+
+message(STATUS ${DIR_SRC_LAYER_ACTIVIATION})
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
