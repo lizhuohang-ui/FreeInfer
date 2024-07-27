@@ -1,16 +1,12 @@
+#include "sigmoid.hpp"
 
-#include "relu.hpp"
-
-#include <cstdint>
+#include <cmath>
 #include <memory>
 
-#include "layer_factory.hpp"
 #include "status_code.hpp"
-#include "tensor.hpp"
 
 namespace free_infer {
-
-InferStatus ReluLayer::Forward(const std::vector<sftensor>& inputs, std::vector<sftensor>& outputs) {
+InferStatus SigmoidLayer::Forward(const std::vector<sftensor>& inputs, std::vector<sftensor>& outputs) {
   if (inputs.empty()) {
     LOG(ERROR) << "The input tensor array in the relu layer is empty";
     return InferStatus::kInferFailedInputEmpty;
@@ -37,25 +33,26 @@ InferStatus ReluLayer::Forward(const std::vector<sftensor>& inputs, std::vector<
         return InferStatus::kInferFailedInputOutSizeMatchError;
       }
     }
-    
-    if(output == nullptr || output->empty()){
-        output = std::make_shared<Tensor<float>>(input->shapes());
-        outputs.at(i) = output;
+
+    if (output == nullptr || output->empty()) {
+      output = std::make_shared<Tensor<float>>(input->shapes());
+      outputs.at(i) = output;
     }
 
     for (uint32_t j = 0; j < input->size(); ++j) {
       float value = input->index(j);
-      output->index(j) = value > 0.f ? value : 0.f;
+      output->index(j) = 1.f / (1.f + std::exp(-value));
     }
   }
   return InferStatus::kInferSuccess;
 }
-ParseParameterAttrStatus ReluLayer::GetInstace(const std::shared_ptr<RuntimeOperator>& op,
-                                               std::shared_ptr<Layer>& relu_layer) {
-  CHECK(op != nullptr);
-  relu_layer = std::make_shared<ReluLayer>();
+
+ParseParameterAttrStatus SigmoidLayer::GetInstace(const std::shared_ptr<RuntimeOperator>& op,
+                                                  std::shared_ptr<Layer>& sigmoid_layer) {
+  sigmoid_layer = std::make_shared<SigmoidLayer>();
   return ParseParameterAttrStatus::kParameterAttrParseSuccess;
 }
 
-LayerReigister ReluReigister("nn.ReLU", ReluLayer::GetInstace);
+LayerReigister SigmoidReigister("nn.Sigmoid", SigmoidLayer::GetInstace);
+
 }  // namespace free_infer

@@ -8,7 +8,6 @@ namespace free_infer {
 class ActiviationLayer : public Layer {
  public:
   explicit ActiviationLayer(std::string layer_name) : Layer(layer_name) {}
-  std::string test2 = "test2";
 };
 }  // namespace free_infer
 
