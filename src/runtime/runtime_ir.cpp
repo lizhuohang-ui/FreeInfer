@@ -455,15 +455,6 @@ bool RuntimeGraph::Build(const std::string& input_name,
   return true;
 }
 
-RuntimeOperator::~RuntimeOperator() {
-  for (auto& [_, param] : this->params) {
-    if (param != nullptr) {
-      delete param;
-      param = nullptr;
-    }
-  }
-}
-
 void RuntimeAttribute::ClearWeight() {
   if (!this->weight_data.empty()) {
     std::vector<char> tmp = std::vector<char>();
@@ -471,7 +462,7 @@ void RuntimeAttribute::ClearWeight() {
   }
 }
 
-template <class T>
+template <typename T>
 std::vector<T> RuntimeAttribute::get(bool need_clear_weight) {
   CHECK(!weight_data.empty());
   CHECK(this->type != RuntimeDataType::kTypeUnknown);
@@ -499,4 +490,31 @@ std::vector<T> RuntimeAttribute::get(bool need_clear_weight) {
   return weights;
 }
 
+template <>
+std::vector<float> RuntimeAttribute::get(bool need_clear_weight) {
+  CHECK(!weight_data.empty());
+  CHECK(this->type != RuntimeDataType::kTypeUnknown);
+  std::vector<float> weights;
+  switch (this->type) {
+    case RuntimeDataType::kTypeFloat32: {
+      const bool is_float = std::is_same<float, float>::value;
+      CHECK(is_float);
+      const uint32_t float_size = sizeof(float);
+      for (uint32_t i = 0; i < weight_data.size() / float_size; i++) {
+        float weight = *((float*)weight_data.data() + i);
+        weights.push_back(weight);
+      }
+      break;
+    }
+    default: {
+      LOG(ERROR)
+          << "0=null 1=f32 2=f64 3=f16 4=i32 5=i64 6=i16 7=i8 8=u8 9=bool";
+      LOG(ERROR) << "Unknown weight data type: " << int(this->type);
+    }
+  }
+  if (need_clear_weight) {
+    this->ClearWeight();
+  }
+  return weights;
+}
 }  // namespace free_infer

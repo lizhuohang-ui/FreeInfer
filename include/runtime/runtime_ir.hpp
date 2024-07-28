@@ -84,7 +84,7 @@ class RuntimeGraph {
 
 class RuntimeOperator {
  public:
-  virtual ~RuntimeOperator();
+  virtual ~RuntimeOperator() = default;
 
   bool has_forward = false;
   std::string type;
@@ -99,7 +99,7 @@ class RuntimeOperator {
 
   std::shared_ptr<Layer> layer;
 
-  std::map<std::string, RuntimeParameter*> params;
+  std::map<std::string, std::shared_ptr<RuntimeParameter>> params;
   std::map<std::string, std::shared_ptr<RuntimeAttribute>> attrs;
 };
 
@@ -135,8 +135,10 @@ class RuntimeAttribute {
   std::vector<char> weight_data;
   std::vector<int> shape;
   RuntimeDataType type = RuntimeDataType::kTypeUnknown;
-  template <class T>
+
+  template <typename T>
   std::vector<T> get(bool need_clear_weight = true);
+
   void ClearWeight();
 };
 
