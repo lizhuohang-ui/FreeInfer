@@ -7,6 +7,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 #include "ir.h"
@@ -39,7 +40,7 @@ class RuntimeGraph {
   const std::string& param_path() const;
   const std::vector<std::shared_ptr<RuntimeOperator>>& operators() const;
   const std::vector<std::shared_ptr<RuntimeOperator>>& get_topo_queues() const;
-  const GraphState graph_state() const; 
+  const GraphState graph_state() const;
   bool Init();
   bool Build(const std::string& input_name, const std::string& output_name);
   void Topo(void);
@@ -118,15 +119,33 @@ class RuntimeParameter {
       RuntimeParameterType type = RuntimeParameterType::kParameterUnknown)
       : type(type) {}
 
- private:
+ protected:
   RuntimeParameterType type = RuntimeParameterType::kParameterUnknown;
 };
 
 template <class T>
 class RuntimeParameterTyped : public RuntimeParameter {
  public:
-  explicit RuntimeParameterTyped(RuntimeParameterType type)
-      : RuntimeParameter(type) {}
+  RuntimeParameterTyped(RuntimeParameterType type) : RuntimeParameter(type) {}
+
+  explicit RuntimeParameterTyped(T value) : value(value) {
+    if (std::is_same<T, int>::value) {
+      this->type = RuntimeParameterType::kParameterInt;
+    } else if (std::is_same<T, float>::value) {
+      this->type = RuntimeParameterType::kParameterFloat;
+    } else if (std::is_same<T, std::string>::value) {
+      this->type = RuntimeParameterType::kParameterString;
+    } else if (std::is_same<T, bool>::value) {
+      this->type = RuntimeParameterType::kParameterBool;
+    } else if (std::is_same<T, std::vector<int>>::value) {
+      this->type = RuntimeParameterType::kParameterIntArray;
+    } else if (std::is_same<T, std::vector<float>>::value) {
+      this->type = RuntimeParameterType::kParameterFloatArray;
+    } else if (std::is_same<T, std::vector<std::string>>::value) {
+      this->type = RuntimeParameterType::kParameterStringArray;
+    }
+  }
+
   T value;
 };
 

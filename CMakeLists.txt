@@ -16,10 +16,12 @@ aux_source_directory(./src/runtime DIR_SRC_RUNTIME)
 aux_source_directory(./src/layer/layer_factory DIR_SRC_LAYER_FACTORY)
 aux_source_directory(./src/layer/layer_activiation DIR_SRC_LAYER_ACTIVIATION)
 aux_source_directory(./src/layer/layer_convolution DIR_SRC_LAYER_CONVOLUTION)
+aux_source_directory(./src/layer/layer_pooling DIR_SRC_LAYER_POOLING)
 aux_source_directory(./test DIR_TEST_ARMA)
 
 add_executable(free-infer main.cpp ${DIR_SRC_TENSOR} ${DIR_SRC_PNNX} ${DIR_TEST_ARMA} 
-        ${DIR_SRC_RUNTIME} ${DIR_SRC_LAYER_FACTORY} ${DIR_SRC_LAYER_ACTIVIATION} ${DIR_SRC_LAYER_CONVOLUTION})
+        ${DIR_SRC_RUNTIME} ${DIR_SRC_LAYER_FACTORY} ${DIR_SRC_LAYER_ACTIVIATION} ${DIR_SRC_LAYER_CONVOLUTION}
+        ${DIR_SRC_LAYER_POOLING})
 
 set(link_lib glog::glog GTest::gtest)
 if (!WIN32)
@@ -33,6 +35,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/in
                                                   ${CMAKE_CURRENT_SOURCE_DIR}/include/layer/layer_factory
                                                   ${CMAKE_CURRENT_SOURCE_DIR}/include/layer/layer_activiation
                                                   ${CMAKE_CURRENT_SOURCE_DIR}/include/layer/layer_convolution
+                                                  ${CMAKE_CURRENT_SOURCE_DIR}/include/layer/layer_pooling
                                                   )
 target_link_libraries(${PROJECT_NAME} ${ARMADILLO_LIBRARIES} ${glog_LIBRARIES} ${link_lib})
 
