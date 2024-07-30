@@ -1,12 +1,15 @@
 
 #include <glog/logging.h>
 #include <gtest/gtest.h>
+#include <memory>
+#include <string>
 
 #include "layer_factory.hpp"
 #include "relu.hpp"
 #include "sigmoid.hpp"
 #include "tensor.hpp"
 #include "layer_convolution.hpp"
+#include "parse_expression.hpp"
 
 TEST(TestLayer, ReLUForward) {
   using namespace free_infer;
@@ -150,4 +153,15 @@ TEST(TestLayer, MaxPoolingForward) {
 
   ASSERT_EQ(outputs.size(), 1);
   outputs.front()->Show();
+}
+
+TEST(TestLayer, ExperssionParser){
+ using namespace free_infer;
+ std::string statement = "add(@0, @1)";
+ ExpressionParser expression_parser(statement);
+ expression_parser.Tokenizer();
+ int32_t index = 0;
+ std::shared_ptr<TokenNode> token_root;
+ token_root = expression_parser.Generate_(index);
+ LOG(INFO) << "=================";
 }
