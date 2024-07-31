@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <cctype>
 #include <cstdint>
+#include <ios>
 #include <memory>
 #include <stack>
 #include <string>
@@ -44,6 +45,22 @@ void ExpressionParser::Tokenizer(void) {
             << "Parse add token failed, illegal character: "
             << statement_.at(i + 2);
         Token token(TokenType::TokenMul, i, i + 3);
+        tokens_.push_back(token);
+        std::string token_string(statement_.begin() + i,
+                                 statement_.begin() + i + 3);
+        token_strs_.push_back(token_string);
+        i += 3;
+        break;
+      }
+      case 's': {
+        CHECK(i + 1 < statement_.size() && statement_.at(i + 1) == 'i')
+            << "Parse add token failed, illegal character: "
+            << statement_.at(i + 1);
+        CHECK(i + 2 < statement_.size() && statement_.at(i + 2) == 'n')
+            << "Parse add token failed, illegal character: "
+            << statement_.at(i + 2);
+
+        Token token(TokenType::TokenSin, i, i + 3);
         tokens_.push_back(token);
         std::string token_string(statement_.begin() + i,
                                  statement_.begin() + i + 3);
@@ -108,7 +125,8 @@ std::shared_ptr<TokenNode> ExpressionParser::Generate_(int32_t& index) {
 
   CHECK(current_token.token_type == TokenType::TokenInputNumber ||
         current_token.token_type == TokenType::TokenAdd ||
-        current_token.token_type == TokenType::TokenMul);
+        current_token.token_type == TokenType::TokenMul ||
+        current_token.token_type == TokenType::TokenSin);
   if (current_token.token_type == TokenType::TokenInputNumber) {
     int32_t start_pos = current_token.start_pos + 1;
     int32_t end_pos = current_token.end_pos;
@@ -120,6 +138,32 @@ std::shared_ptr<TokenNode> ExpressionParser::Generate_(int32_t& index) {
         std::string(this->statement_.begin() + start_pos,
                     this->statement_.begin() + end_pos);
     return std::make_shared<TokenNode>(std::stoi(str_number), nullptr, nullptr);
+  } else if (current_token.token_type == TokenType::TokenSin) {
+    auto current_node = std::make_shared<TokenNode>();
+    current_node->num_index = int(current_token.token_type);
+
+    index += 1;
+    CHECK(index < this->tokens_.size()) << "Missing left bracket!";
+    CHECK(this->tokens_.at(index).token_type == TokenType::TokenLeftBracket);
+
+    index += 1;
+    CHECK(index < this->tokens_.size())
+        << "Missing correspond sin input number token!";
+    const auto sin_number_token = this->tokens_.at(index);
+
+    if (sin_number_token.token_type == TokenType::TokenInputNumber ||
+        sin_number_token.token_type == TokenType::TokenAdd ||
+        sin_number_token.token_type == TokenType::TokenMul ||
+        sin_number_token.token_type == TokenType::TokenSin) {
+      current_node->left = Generate_(index);
+    } else {
+      LOG(FATAL) << "Unknown token type: " << int(sin_number_token.token_type);
+    }
+
+    index += 1;
+    CHECK(index < this->tokens_.size()) << "Missing right bracket!";
+    CHECK(this->tokens_.at(index).token_type == TokenType::TokenRightBracket);
+    return current_node;
   } else if (current_token.token_type == TokenType::TokenAdd ||
              current_token.token_type == TokenType::TokenMul) {
     auto current_node = std::make_shared<TokenNode>();
@@ -135,7 +179,8 @@ std::shared_ptr<TokenNode> ExpressionParser::Generate_(int32_t& index) {
 
     if (left_token.token_type == TokenType::TokenInputNumber ||
         left_token.token_type == TokenType::TokenAdd ||
-        left_token.token_type == TokenType::TokenMul) {
+        left_token.token_type == TokenType::TokenMul ||
+        left_token.token_type == TokenType::TokenSin) {
       current_node->left = Generate_(index);
     } else {
       LOG(FATAL) << "Unknown token type: " << int(left_token.token_type);
@@ -151,7 +196,8 @@ std::shared_ptr<TokenNode> ExpressionParser::Generate_(int32_t& index) {
 
     if (right_token.token_type == TokenType::TokenInputNumber ||
         right_token.token_type == TokenType::TokenAdd ||
-        right_token.token_type == TokenType::TokenMul) {
+        right_token.token_type == TokenType::TokenMul ||
+        right_token.token_type == TokenType::TokenSin) {
       current_node->right = Generate_(index);
     } else {
       LOG(FATAL) << "Unknown token type: " << int(right_token.token_type);
@@ -167,11 +213,11 @@ std::shared_ptr<TokenNode> ExpressionParser::Generate_(int32_t& index) {
 }
 
 void ReversePolish(const std::shared_ptr<TokenNode>& root_node,
-                   std::vector<std::shared_ptr<TokenNode>>& reverse_polish) {
+                   std::stack<std::shared_ptr<TokenNode>>& reverse_polish_stack) {
   if (root_node != nullptr) {
-    ReversePolish(root_node->left, reverse_polish);
-    ReversePolish(root_node->right, reverse_polish);
-    reverse_polish.push_back(root_node);
+    reverse_polish_stack.push(root_node);
+    ReversePolish(root_node->left, reverse_polish_stack);
+    ReversePolish(root_node->right, reverse_polish_stack);
   }
 }
 
@@ -185,7 +231,12 @@ std::vector<std::shared_ptr<TokenNode>> ExpressionParser::Generate() {
   CHECK(index == tokens_.size() - 1);
 
   std::vector<std::shared_ptr<TokenNode>> reverse_polish;
-  ReversePolish(root, reverse_polish);
+  std::stack<std::shared_ptr<TokenNode>> reverse_polish_stack;
+  ReversePolish(root, reverse_polish_stack);
+  while(reverse_polish_stack.size() > 0){
+    reverse_polish.push_back(reverse_polish_stack.top());
+    reverse_polish_stack.pop();
+  }
   return reverse_polish;
 }
 

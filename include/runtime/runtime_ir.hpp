@@ -119,7 +119,7 @@ class RuntimeParameter {
       RuntimeParameterType type = RuntimeParameterType::kParameterUnknown)
       : type(type) {}
 
- protected:
+ public:
   RuntimeParameterType type = RuntimeParameterType::kParameterUnknown;
 };
 
