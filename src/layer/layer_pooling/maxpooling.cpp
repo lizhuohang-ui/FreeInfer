@@ -81,8 +81,7 @@ InferStatus MaxPoolingLayer::Forward(const std::vector<sftensor>& inputs,
 
     sftensor output = outputs.at(i);
     if (output == nullptr || output->empty()) {
-      output =
-          std::make_shared<Tensor<float>>(input_c, output_h, output_w);
+      output = std::make_shared<Tensor<float>>(input_c, output_h, output_w);
       outputs.at(i) = output;
     }
 
@@ -128,7 +127,6 @@ InferStatus MaxPoolingLayer::Forward(const std::vector<sftensor>& inputs,
 ParseParameterAttrStatus MaxPoolingLayer::GetInstace(
     const std::shared_ptr<RuntimeOperator>& op,
     std::shared_ptr<Layer>& maxpooling_layer) {
-
   CHECK(op != nullptr) << "MaxPooling get instance failed, operator is nullptr";
   const std::map<std::string, std::shared_ptr<RuntimeParameter>>& params =
       op->params;
@@ -195,5 +193,6 @@ ParseParameterAttrStatus MaxPoolingLayer::GetInstace(
   return ParseParameterAttrStatus::kParameterAttrParseSuccess;
 }
 
-LayerReigister MaxPoolingGetInstace("nn.MaxPool2d", MaxPoolingLayer::GetInstace);
+LayerReigister MaxPoolingGetInstace("nn.MaxPool2d",
+                                    MaxPoolingLayer::GetInstace);
 }  // namespace free_infer
