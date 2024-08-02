@@ -15,6 +15,7 @@ aux_source_directory(./src/pnnx DIR_SRC_PNNX)
 aux_source_directory(./src/runtime DIR_SRC_RUNTIME)
 aux_source_directory(./src/layer/layer_factory DIR_SRC_LAYER_FACTORY)
 aux_source_directory(./src/layer/layer_activiation DIR_SRC_LAYER_ACTIVIATION)
+aux_source_directory(./src/layer/layer_linear DIR_SRC_LAYER_LINEAR)
 aux_source_directory(./src/layer/layer_convolution DIR_SRC_LAYER_CONVOLUTION)
 aux_source_directory(./src/layer/layer_pooling DIR_SRC_LAYER_POOLING)
 aux_source_directory(./src/layer/layer_expression DIR_SRC_LAYER_EXPRESSION)
@@ -38,6 +39,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/in
                                                   ${CMAKE_CURRENT_SOURCE_DIR}/include/layer/layer_convolution
                                                   ${CMAKE_CURRENT_SOURCE_DIR}/include/layer/layer_pooling
                                                   ${CMAKE_CURRENT_SOURCE_DIR}/include/layer/layer_expression
+                                                  ${CMAKE_CURRENT_SOURCE_DIR}/include/layer/layer_linear
                                                   )
 target_link_libraries(${PROJECT_NAME} ${ARMADILLO_LIBRARIES} ${glog_LIBRARIES} ${link_lib})
 

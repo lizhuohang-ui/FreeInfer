@@ -72,6 +72,7 @@ enum class ParseParameterAttrStatus {
   kAttrMissingYoloStrides = 26,
   kAttrMissingYoloAnchorGrides = 27,
   kAttrMissingYoloGrides = 28,
+  kAttrMissingInFeatures,
 
   kParameterAttrParseSuccess = 0
 };
