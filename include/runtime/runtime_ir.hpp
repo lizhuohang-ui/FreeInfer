@@ -45,6 +45,8 @@ class RuntimeGraph {
   bool Build(const std::string& input_name, const std::string& output_name);
   void Topo(void);
   void dfs(std::shared_ptr<RuntimeOperator> op);
+  std::vector<sftensor> Forward(const std::vector<sftensor>& inputs);
+
 
  private:
   static void InitGraphOperatorsInput(
@@ -69,6 +71,11 @@ class RuntimeGraph {
   static void InitOperatorOutput(
       const std::vector<pnnx::Operator*>& pnnx_operators,
       const std::vector<std::shared_ptr<RuntimeOperator>>& operators);
+  
+  static std::shared_ptr<Layer> CreateLayer(const std::shared_ptr<RuntimeOperator>& op);
+  
+  static void ProbeNextLayer(const std::shared_ptr<RuntimeOperator>& current_op, 
+  const std::vector<sftensor>& layer_output_data);
 
  private:
   std::string input_name_;

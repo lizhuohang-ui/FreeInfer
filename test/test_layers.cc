@@ -9,6 +9,7 @@
 #include "layer_convolution.hpp"
 #include "layer_expression.hpp"
 #include "layer_factory.hpp"
+#include "linear.hpp"
 #include "parse_expression.hpp"
 #include "relu.hpp"
 #include "runtime_ir.hpp"
@@ -362,24 +363,22 @@ TEST(test_expression, complex2) {
 
 TEST(TestLayer, LinearForward) {
   using namespace free_infer;
-  sftensor input = std::make_shared<Tensor<float>>(1, 1, 512);
+  sftensor input = std::make_shared<Tensor<float>>(1, 1, 32);
+  input->Fill(1);
   std::vector<sftensor> inputs;
   inputs.push_back(input);
-  
-  std::shared_ptr<RuntimeOperator> op = std::make_shared<RuntimeOperator>();
-  op->type = "nn.Linear";
 
-  int in_features = 512;
-  int out_features = 1000;
-  std::shared_ptr<RuntimeParameter> in_features_param =
-      std::make_shared<RuntimeParameterInt>(in_features);
-  op->params.insert({"in_features ", in_features_param});
-  std::shared_ptr<RuntimeParameter> out_features_param =
-      std::make_shared<RuntimeParameterInt>(out_features);
-  op->params.insert({"out_features ", out_features_param});
-  
+  std::string bin_path("../model_file/test_linear.pnnx.bin");
+  std::string param_path("../model_file/test_linear.pnnx.param");
+  RuntimeGraph graph(param_path, bin_path);
+  const bool init_success = graph.Init();
+  ASSERT_EQ(init_success, true);
+  graph.Build("pnnx_input_0", "pnnx_output_0");
 
-  std::shared_ptr<Layer> layer;
-  layer = LayerFactory::CreateLayer(op);
-  ASSERT_NE(layer, nullptr);
+  std::vector<sftensor> outputs = graph.Forward(inputs);
+  sftensor output = outputs.front();
+  for (int i = 0; i < output->shapes().size(); ++i) {
+    LOG(INFO) << output->shapes().at(i);
+  }
+  output->Show();
 }

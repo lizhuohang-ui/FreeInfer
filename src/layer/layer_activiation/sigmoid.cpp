@@ -53,6 +53,7 @@ ParseParameterAttrStatus SigmoidLayer::GetInstace(const std::shared_ptr<RuntimeO
   return ParseParameterAttrStatus::kParameterAttrParseSuccess;
 }
 
-LayerReigister SigmoidReigister("nn.Sigmoid", SigmoidLayer::GetInstace);
+LayerReigister nnSigmoidReigister("nn.Sigmoid", SigmoidLayer::GetInstace);
+LayerReigister FSigmoidReigister("F.sigmoid", SigmoidLayer::GetInstace);
 
 }  // namespace free_infer

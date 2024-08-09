@@ -12,6 +12,8 @@
 #include <vector>
 
 #include "ir.h"
+#include "layer.hpp"
+#include "layer_factory.hpp"
 #include "status_code.hpp"
 #include "tensor.hpp"
 
@@ -417,6 +419,14 @@ void RuntimeGraph::InitOperatorOutput(
   }
 }
 
+std::shared_ptr<Layer> RuntimeGraph::CreateLayer(
+    const std::shared_ptr<RuntimeOperator>& op) {
+  CHECK(op != nullptr) << "Operator is empty";
+  auto layer = LayerFactory::CreateLayer(op);
+  CHECK(layer != nullptr) << op->type << " layer init failed";
+  return layer;
+}
+
 bool RuntimeGraph::Build(const std::string& input_name,
                          const std::string& output_name) {
   if (graph_state_ == GraphState::Complete) {
@@ -437,6 +447,15 @@ bool RuntimeGraph::Build(const std::string& input_name,
   LOG_IF(ERROR, operators_.empty())
       << "Graph operators is empty, may be no init";
 
+  for (const auto& op : operators_) {
+    if (op->type != "pnnx.Input" && op->type != "pnnx.Output") {
+      std::shared_ptr<Layer> layer = CreateLayer(op);
+      CHECK(layer != nullptr) << op->name << "layer create failed";
+      op->layer = layer;
+      layer->set_runtime_operator(op);
+    }
+  }
+
   InitOperatorInput(operators_);
   InitOperatorOutput(graph_->ops, operators_);
 
@@ -453,6 +472,74 @@ bool RuntimeGraph::Build(const std::string& input_name,
   }
 
   return true;
+}
+
+void RuntimeGraph::ProbeNextLayer(
+    const std::shared_ptr<RuntimeOperator>& current_op,
+    const std::vector<sftensor>& layer_output_datas) {
+  const auto& next_ops = current_op->output_operators_maps;
+  for (const auto& [_, next_op] : next_ops) {
+    const auto& next_input_operands = next_op->input_operands_maps;
+    if (next_input_operands.find(current_op->name) !=
+        next_input_operands.end()) {
+      std::vector<sftensor>& next_input_datas =
+          next_input_operands.at(current_op->name)->datas;
+      CHECK(next_input_datas.size() == layer_output_datas.size());
+      for (int i = 0; i < next_input_datas.size(); ++i) {
+        next_input_datas.at(i) = layer_output_datas.at(i);
+      }
+    }
+  }
+}
+
+std::vector<sftensor> RuntimeGraph::Forward(
+    const std::vector<sftensor>& inputs) {
+  if (graph_state_ < GraphState::Complete) {
+    LOG(FATAL) << "Graph need be build!";
+  }
+  CHECK(graph_state_ == GraphState::Complete)
+      << "Graph status error, current state is " << int(graph_state_);
+
+  CHECK(operators_topo_.size() == operators_.size())
+      << "Build wrong topo queue";
+
+  for (const auto& op : operators_topo_) {
+    op->has_forward = false;
+  }
+
+  for (const auto& current_op : operators_topo_) {
+    if (current_op->type == "pnnx.Input") {
+      current_op->has_forward = true;
+      ProbeNextLayer(current_op, inputs);
+    } else if (current_op->type == "pnnx.Output") {
+      current_op->has_forward = true;
+      CHECK(current_op->input_operands.size() == 1);
+      current_op->output_operands = current_op->input_operands.front();
+    } else {
+      InferStatus status = current_op->layer->Forward();
+      CHECK(status == InferStatus::kInferSuccess)
+          << current_op->layer->layer_name()
+          << "layer forward failed, error code: " << int(status);
+      current_op->has_forward = true;
+      ProbeNextLayer(current_op, current_op->output_operands->datas);
+    }
+  }
+
+  for (const auto& op : operators_topo_) {
+    LOG_IF(FATAL, !op->has_forward)
+        << "The operator: " << op->name << " has not been forward yet!";
+  }
+
+  if (operators_maps_.find(output_name_) != operators_maps_.end()) {
+    const auto& output_op = operators_maps_.at(output_name_);
+    CHECK(output_op->output_operands != nullptr)
+        << "Output from" << output_op->name << " is empty";
+    const auto& output_operand = output_op->output_operands;
+    return output_operand->datas;
+  } else {
+    LOG(FATAL) << "Can not find the output operator " << output_name_;
+    return std::vector<std::shared_ptr<Tensor<float>>>{};
+  }
 }
 
 void RuntimeAttribute::ClearWeight() {

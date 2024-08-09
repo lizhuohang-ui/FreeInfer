@@ -23,7 +23,7 @@ aux_source_directory(./test DIR_TEST_ARMA)
 
 add_executable(free-infer main.cpp ${DIR_SRC_TENSOR} ${DIR_SRC_PNNX} ${DIR_TEST_ARMA} 
         ${DIR_SRC_RUNTIME} ${DIR_SRC_LAYER_FACTORY} ${DIR_SRC_LAYER_ACTIVIATION} ${DIR_SRC_LAYER_CONVOLUTION}
-        ${DIR_SRC_LAYER_POOLING} ${DIR_SRC_LAYER_EXPRESSION})
+        ${DIR_SRC_LAYER_POOLING} ${DIR_SRC_LAYER_EXPRESSION} ${DIR_SRC_LAYER_LINEAR})
 
 set(link_lib glog::glog GTest::gtest)
 if (!WIN32)

@@ -16,6 +16,8 @@ class Layer {
   virtual ~Layer() = default;
 
   virtual InferStatus Forward(const std::vector<sftensor>& inputs, std::vector<sftensor>& outputs);
+  virtual InferStatus Forward();
+
   virtual const std::string& layer_name() const { return this->layer_name_; }
   void set_runtime_operator(const std::shared_ptr<RuntimeOperator>& runtime_operator);
 

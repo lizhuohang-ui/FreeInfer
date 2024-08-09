@@ -156,6 +156,7 @@ InferStatus LinearLayer::Forward(const std::vector<sftensor>& inputs,
       }
     }
   }
+  return InferStatus::kInferSuccess;
 }
 
 ParseParameterAttrStatus LinearLayer::GetInstace(

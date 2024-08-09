@@ -34,6 +34,7 @@ class LinearLayer : public Layer {
   std::vector<sftensor> weights_;
   std::vector<sftensor> bias_;
 };
+
 }  // namespace free_infer
 
 #endif
