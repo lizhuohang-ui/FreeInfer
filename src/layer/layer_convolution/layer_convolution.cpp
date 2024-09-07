@@ -55,7 +55,7 @@ void ConvolutionLayer::InitBiasParam(const uint32_t bias_n,
                                      const uint32_t bias_w) {
   this->bias_ = std::vector<sftensor>(bias_n);
   for (uint32_t i = 0; i < bias_n; ++i) {
-    this->weights_[i] = std::make_shared<Tensor<float>>(bias_c, bias_h, bias_w);
+    this->bias_[i] = std::make_shared<Tensor<float>>(bias_c, bias_h, bias_w);
   }
 }
 
