@@ -5,6 +5,12 @@
 #include "tensor.hpp"
 
 namespace free_infer {
+
+sftensor TensorClone(const sftensor& tensor) {
+  sftensor new_tensor = std::make_shared<Tensor<float>>(*tensor);
+  return new_tensor;
+}
+
 std::tuple<sftensor, sftensor> TensorBroadcast(const sftensor& tensor1,
                                                const sftensor& tensor2) {
   CHECK(tensor1 != nullptr && tensor2 != nullptr);
@@ -53,16 +59,14 @@ sftensor TensorElementAdd(const sftensor& tensor1, const sftensor& tensor2) {
   }
 }
 
-sftensor TensorElementSin(const sftensor& tensor)
-{
+sftensor TensorElementSin(const sftensor& tensor) {
   sftensor output_tensor = std::make_shared<Tensor<float>>(tensor->shapes());
   output_tensor->set_data(arma::sin(tensor->data()));
   return output_tensor;
 }
 
-sftensor TensorElementMultiply(
-    const std::shared_ptr<Tensor<float>>& tensor1,
-    const std::shared_ptr<Tensor<float>>& tensor2) {
+sftensor TensorElementMultiply(const std::shared_ptr<Tensor<float>>& tensor1,
+                               const std::shared_ptr<Tensor<float>>& tensor2) {
   CHECK(tensor1 != nullptr && tensor2 != nullptr);
   if (tensor1->shapes() == tensor2->shapes()) {
     sftensor output_tensor = std::make_shared<Tensor<float>>(tensor1->shapes());
@@ -75,7 +79,8 @@ sftensor TensorElementMultiply(
     const auto& [input_tensor1, input_tensor2] =
         TensorBroadcast(tensor1, tensor2);
     CHECK(input_tensor1->shapes() == input_tensor2->shapes());
-    sftensor output_tensor = std::make_shared<Tensor<float>>(input_tensor1->shapes());
+    sftensor output_tensor =
+        std::make_shared<Tensor<float>>(input_tensor1->shapes());
     output_tensor->set_data(input_tensor1->data() % input_tensor2->data());
     return output_tensor;
   }

@@ -129,7 +129,7 @@ InferStatus LinearLayer::Forward(const std::vector<sftensor>& inputs,
     sftensor output = outputs.at(i);
 
     CHECK(input != nullptr && !input->empty())
-        << "The input tensor array in the convolution layer has an empty  "
+        << "The input tensor array in the linear layer has an empty  "
            "tensor "
         << i << " batch";
 
@@ -148,10 +148,10 @@ InferStatus LinearLayer::Forward(const std::vector<sftensor>& inputs,
                          true);
     arma::fmat& result = output->slice(0);
     result = input_vec * weight_t;
-    if(use_bias_){
+    if (use_bias_) {
       const auto& bias_data = bias_.front()->data();
       const auto& bias = bias_data.slice(0);
-      for(uint32_t r = 0; r < result.n_rows; ++r){
+      for (uint32_t r = 0; r < result.n_rows; ++r) {
         result.row(r) += bias;
       }
     }

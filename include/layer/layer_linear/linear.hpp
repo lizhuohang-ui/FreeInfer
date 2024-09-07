@@ -29,7 +29,7 @@ class LinearLayer : public Layer {
 
  private:
   bool use_bias_ = false;
-  uint32_t in_features_;
+ uint32_t in_features_;
   uint32_t out_features_;
   std::vector<sftensor> weights_;
   std::vector<sftensor> bias_;

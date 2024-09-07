@@ -449,6 +449,7 @@ bool RuntimeGraph::Build(const std::string& input_name,
 
   for (const auto& op : operators_) {
     if (op->type != "pnnx.Input" && op->type != "pnnx.Output") {
+      CHECK(op != nullptr);
       std::shared_ptr<Layer> layer = CreateLayer(op);
       CHECK(layer != nullptr) << op->name << "layer create failed";
       op->layer = layer;

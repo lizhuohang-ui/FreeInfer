@@ -1,12 +1,17 @@
+#include <fmt/base.h>
+#include <fmt/core.h>
 #include <glog/logging.h>
 #include <gtest/gtest.h>
 
 #include <armadillo>
 #include <iostream>
+#include <opencv2/core/version.hpp>
+#include <opencv2/opencv.hpp>
+#include <opencv2/videoio.hpp>
 #include <vector>
 
-#include "tensor.hpp"
 #include "load_data.hpp"
+#include "tensor.hpp"
 
 int main(int argc, char* argv[]) {
   std::cout << "Hello, from free-infer!\n";
@@ -15,16 +20,18 @@ int main(int argc, char* argv[]) {
   google::InitGoogleLogging("free");
   FLAGS_log_dir = "../log";
   FLAGS_alsologtostderr = true;
-  
+  fmt::print("hello fmt\n");
+  std::cout << CV_VERSION << "\n";
+
   LOG(INFO) << "Start test...\n";
-  
+
   // free_infer::Tensor<float> tensor(3, 3, 4);
   // std::cout << "Tensor rows: " << tensor.rows() << std::endl;
   // std::cout << "Tensor cols: " << tensor.cols() << std::endl;
   // std::cout << "Tensor channels: " << tensor.channels() << std::endl;
   // std::cout << "Tensor size: " << tensor.size() << std::endl;
   // std::cout << "Tensor at: " << tensor.at(1, 1, 1) << std::endl;
-  
+
   // std::vector<float> test{1, 2, 3, 4};
   // std::cout << "vector.data():\n" << test.data() << std::endl;
   // const arma::fmat& test_fmat = arma::fmat(test.data() + 2, 2, 3);
@@ -36,6 +43,6 @@ int main(int argc, char* argv[]) {
   //   }
   //   std::cout << std::endl;
   // }
-   
+
   return RUN_ALL_TESTS();
 }

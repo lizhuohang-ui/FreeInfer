@@ -5,6 +5,7 @@
 
 #include "tensor.hpp"
 namespace free_infer {
+sftensor TensorClone(const sftensor& tensor);
 std::tuple<sftensor, sftensor> TensorBroadcast(const sftensor& tensor1,
                                                const sftensor& tensor2);
 sftensor TensorElementAdd(const sftensor& tensor1, const sftensor& tensor2);
