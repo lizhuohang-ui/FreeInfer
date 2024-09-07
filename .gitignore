@@ -2,5 +2,7 @@ log/
 build/
 .vscode/
 .cache/
-.clangd
 model_file/
+vcpkg_installed/
+.clangd
+.clangd-format
