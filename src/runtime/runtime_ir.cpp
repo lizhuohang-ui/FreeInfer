@@ -437,7 +437,7 @@ bool RuntimeGraph::Build(const std::string& input_name,
   if (graph_state_ == GraphState::NeedInit) {
     bool init_success = Init();
     CHECK(init_success) << "Init graph failed";
-    if (init_success) {
+    if (!init_success) {
       return false;
     }
   }
@@ -489,6 +489,13 @@ void RuntimeGraph::ProbeNextLayer(
       for (int i = 0; i < next_input_datas.size(); ++i) {
         next_input_datas.at(i) = layer_output_datas.at(i);
       }
+    }
+    else {
+      InferStatus status = current_op->layer->Forward();
+      CHECK(status == InferStatus::kInferSuccess) << current_op->layer->layer_name()
+      << " layer forward failed, error code: " << int(status);
+      current_op->has_forward = true;
+      ProbeNextLayer(current_op, current_op->output_operands->datas);
     }
   }
 }
