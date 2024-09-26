@@ -1,8 +1,8 @@
-#include "tensor_util.hpp"
+#include "tensor/tensor_util.hpp"
 
 #include <memory>
 
-#include "tensor.hpp"
+#include "tensor/tensor.hpp"
 
 namespace free_infer {
 

@@ -1,4 +1,4 @@
-#include "tensor.hpp"
+#include "tensor/tensor.hpp"
 #include <cstdint>
 namespace free_infer {
 

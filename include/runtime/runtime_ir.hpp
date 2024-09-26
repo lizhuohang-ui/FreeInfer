@@ -10,9 +10,9 @@
 #include <type_traits>
 #include <vector>
 
-#include "ir.h"
+#include "pnnx/ir.h"
 #include "status_code.hpp"
-#include "tensor.hpp"
+#include "tensor/tensor.hpp"
 
 namespace free_infer {
 

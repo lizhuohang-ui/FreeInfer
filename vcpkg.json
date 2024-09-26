@@ -1,6 +1,9 @@
 {
   "dependencies": [
     "fmt",
-    "opencv4"
+    "opencv4",
+    "glog",
+    "gtest",
+    "armadillo"
   ]
 }

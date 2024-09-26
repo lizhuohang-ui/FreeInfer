@@ -1,4 +1,4 @@
-#include "runtime_ir.hpp"
+#include "runtime/runtime_ir.hpp"
 
 #include <algorithm>
 #include <cassert>
@@ -11,11 +11,11 @@
 #include <utility>
 #include <vector>
 
-#include "ir.h"
-#include "layer.hpp"
-#include "layer_factory.hpp"
-#include "status_code.hpp"
-#include "tensor.hpp"
+#include "pnnx/ir.h"
+#include "layer/layer.hpp"
+#include "layer/layer_factory.hpp"
+#include "runtime/status_code.hpp"
+#include "tensor/tensor.hpp"
 
 namespace free_infer {
 RuntimeGraph::RuntimeGraph(std::string param_path, std::string bin_path)

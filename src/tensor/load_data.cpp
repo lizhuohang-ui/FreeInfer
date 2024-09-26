@@ -1,4 +1,4 @@
-#include "load_data.hpp"
+#include "tensor/load_data.hpp"
 #include <armadillo>
 #include <cstddef>
 #include <exception>
